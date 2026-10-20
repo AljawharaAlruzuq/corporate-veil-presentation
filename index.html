@@ -195,6 +195,45 @@ body.idle #bar{opacity:0}
 #overview .tile b{font-family:var(--serif);font-size:18px;font-weight:600}
 #overview h6{color:#fff;font-size:20px;font-family:var(--serif);margin:0 auto 20px;max-width:1300px}
 
+
+/* ---------- quiz game ---------- */
+.qg{display:grid;grid-template-columns:1fr 300px;gap:26px;height:520px}
+.qg-main{display:flex;flex-direction:column}
+.qg-top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.qg-dot{width:34px;height:8px;border-radius:4px;background:#d5dedb;transition:background .3s}
+.qg-dot.cur{background:var(--ink)}.qg-dot.ok{background:var(--emerald)}.qg-dot.bad{background:var(--red)}
+.qg-q{font-family:var(--serif);font-size:27px;font-weight:700;line-height:1.25;min-height:104px;margin-bottom:16px}
+.qg-opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.qg-opt{display:flex;gap:14px;align-items:center;text-align:left;background:#fff;border-radius:14px;padding:14px 18px;font-size:16.5px;line-height:1.35;
+  box-shadow:0 1px 2px rgba(20,23,31,.06),0 6px 18px rgba(20,23,31,.06);border:2px solid transparent;transition:transform .15s,border-color .2s,background .2s;min-height:78px}
+.qg-opt:hover:not(:disabled){transform:translateY(-3px);border-color:var(--gold)}
+.qg-opt .L{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--mist)}
+.qg-opt.ok{background:#e4f3ec;border-color:var(--emerald)}.qg-opt.ok .L{background:var(--emerald);color:#fff}
+.qg-opt.bad{background:#f8e5e8;border-color:var(--red)}.qg-opt.bad .L{background:var(--red);color:#fff}
+.qg-opt:disabled{cursor:default}
+.qg-fb{margin-top:16px;min-height:74px;border-radius:14px;padding:14px 18px;font-size:16px;line-height:1.45;opacity:0;transform:translateY(8px);transition:all .35s}
+.qg-fb.show{opacity:1;transform:none}
+.qg-fb.ok{background:#e4f3ec}.qg-fb.bad{background:#f8e5e8}
+.qg-fb b{display:block;margin-bottom:2px}
+.qg-side{background:var(--ink);color:#fff;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.qg-score{font-family:var(--serif);font-size:72px;font-weight:700;color:var(--gold);line-height:1}
+.qg-score small{font-size:28px;color:#9fb3ac}
+.qg-streak{font-size:15px;color:#cfe0da;min-height:22px}
+.qg-time{height:8px;border-radius:4px;background:#2c3242;overflow:hidden}
+.qg-time i{display:block;height:100%;width:100%;background:var(--sage);transform-origin:left}
+.qg-side .btn{margin-top:auto;justify-content:center}
+.qg-side .keys{font-size:13px;color:#9fb3ac}
+.qg-res{display:none;flex-direction:column;align-items:flex-start;gap:14px}
+.qg.done .qg-res{display:flex}.qg.done .qg-play{display:none}
+.qg-res h3{font-size:40px}
+.qg-res .bars{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:6px}
+.qg-res .bar{display:grid;grid-template-columns:200px 1fr 54px;align-items:center;gap:12px;font-size:15px}
+.qg-res .bar .t{height:12px;border-radius:6px;background:#d5dedb;overflow:hidden}
+.qg-res .bar .t i{display:block;height:100%;background:var(--emerald);transition:width .8s}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti span{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translateY(780px) rotate(720deg);opacity:.2}}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -475,6 +514,36 @@ Thank you. We're happy to take questions.">
 </section>
 
 <!-- 15 REFERENCES -->
+<section class="slide" data-speaker="3" data-title="Quiz game" id="quizSlide" data-notes="Quick quiz to finish. Read each question aloud and let the room shout the answer (or split into two halves of the room and keep score). Click the answer they choose; the explanation appears underneath. Seven questions, about 2 minutes if you keep a fast pace. Keys: 1–4 or A–D pick an answer, the right arrow moves to the next question.">
+  <div class="head"><div><h2 class="r">Quick-fire quiz</h2><div class="sub r">Seven questions on everything you just heard. 20 seconds each.</div></div><div class="chip r"><i style="background:var(--gold)"></i><b>Nouran</b> 10:00 – 15:00</div></div>
+  <div class="qg r" style="--d:1" id="qg">
+    <div class="qg-main">
+      <div class="qg-play">
+        <div class="qg-top" id="qgDots"></div>
+        <div class="qg-q" id="qgQ"></div>
+        <div class="qg-opts" id="qgOpts"></div>
+        <div class="qg-fb" id="qgFb"></div>
+      </div>
+      <div class="qg-res">
+        <div class="label" style="color:var(--emerald)">Final result</div>
+        <h3 id="qgResTitle"></h3>
+        <p id="qgResText" style="color:var(--slate)"></p>
+        <div class="bars" id="qgBars"></div>
+      </div>
+    </div>
+    <div class="qg-side">
+      <div class="label" style="color:#9fb3ac">Score</div>
+      <div class="qg-score"><span id="qgScore">0</span><small> / 7</small></div>
+      <div class="qg-streak" id="qgStreak"></div>
+      <div class="qg-time"><i id="qgTime"></i></div>
+      <div class="keys">1–4 to answer · → next question</div>
+      <button class="btn gold" id="qgBtn">Start quiz</button>
+    </div>
+    <div class="confetti" id="qgConf"></div>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
 <section class="slide" data-speaker="3" data-title="References" data-notes="Reference list in OSCOLA style. Leave on screen during questions if useful.">
   <div class="head"><h2 class="r">References</h2></div>
   <div class="grid2 refs" style="gap:48px">
@@ -618,6 +687,11 @@ Could Sharia principles support a general anti-abuse rule? Possibly, but without
   addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
+    if (cur === quizIndex && !over.classList.contains('show')) {
+      const map = {'1':0,'2':1,'3':2,'4':3,'a':0,'b':1,'c':2,'d':3};
+      if (k in map && qi>=0 && !answered && !qgEl.classList.contains('done')) { e.preventDefault(); pick(map[k]); return; }
+      if (k==='arrowright' && !(qgEl.classList.contains('done')) && !(qi>=0 && !answered)) { e.preventDefault(); quizAdvance(); return; }
+    }
     if (['arrowright','pagedown',' ','enter'].includes(e.key.toLowerCase())) { e.preventDefault(); next(); }
     else if (['arrowleft','pageup','backspace'].includes(k)) { e.preventDefault(); prev(); }
     else if (k==='home') go(0); else if (k==='end') go(N-1);
@@ -634,8 +708,75 @@ Could Sharia principles support a general anti-abuse rule? Possibly, but without
   let idle; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(()=>document.body.classList.add('idle'), 3000); };
   ['mousemove','keydown','touchstart'].forEach(ev => addEventListener(ev, wake)); wake();
 
+
+  // ---------- quiz game ----------
+  const QS = [
+    {t:'Foundations', q:'In Salomon, why was Mr Salomon not personally liable for the company\'s debts?', o:['He had already repaid every creditor from his own savings','The company was a separate legal person','He owned fewer than half of the company\'s shares','The liquidator was found to have acted in bad faith'], a:1, e:'Once validly formed, the company is a different person from its members, however much one of them controls it.'},
+    {t:'UK case law', q:'After Prest v Petrodel, when may a UK court pierce the veil?', o:['Whenever justice and fairness seem to require it','When a corporate group acts as one economic unit','Whenever the company cannot pay its debts','When a person deliberately evades an existing obligation through a company they control'], a:3, e:'Lord Sumption\'s evasion principle, and only as a last resort when no other remedy works.'},
+    {t:'Saudi law', q:'Which Saudi article lets third parties claim directly against managers and board members?', o:['Article 9','Article 242(2)','Article 28','Article 209'], a:2, e:'Article 28: joint liability to the company, partners, shareholders or third parties for breach, error or negligence.'},
+    {t:'Saudi law', q:'When does a Saudi company acquire legal personality?', o:['On registration in the Commercial Register','When the founders sign the articles of association','On its first day of trading','When the ministry issues its business licence'], a:0, e:'Article 9. Before registration it has personality only as far as incorporation needs.'},
+    {t:'UK case law', q:'What did the Court of Appeal decide in Adams v Cape Industries?', o:['A parent is always liable for its subsidiaries\' torts','A corporate group should be treated as one company','The veil cannot be lifted just because justice seems to require it','Tort victims can always reach the shareholders'], a:2, e:'The court rejected the single economic unit argument and confirmed using subsidiaries to limit future liability is legitimate.'},
+    {t:'UK statute', q:'Under wrongful trading (IA 1986 s 214), where does the director\'s contribution go?', o:['To the creditor who brought the claim','Into the company\'s assets for all creditors','To the shareholders as compensation','To the Insolvency Service as a fine'], a:1, e:'It is a contribution to the company\'s assets in insolvent liquidation, shared by all creditors. The veil stays intact.'},
+    {t:'Comparison', q:'Which statement best describes the difference between the two systems?', o:['The UK has a statutory list of piercing situations; Saudi Arabia relies on case law','Both systems require proof of deliberate evasion','Saudi law has a general anti-abuse rule for all companies','Most Saudi triggers are objective; the UK test needs deliberate evasion'], a:3, e:'Saudi triggers like failure to register need no proof of bad intent. Prest requires deliberate evasion of an existing duty.'},
+  ];
+  const qgEl = document.getElementById('qg'), qQ = document.getElementById('qgQ'), qO = document.getElementById('qgOpts'), qF = document.getElementById('qgFb'),
+        qDots = document.getElementById('qgDots'), qScore = document.getElementById('qgScore'), qStreak = document.getElementById('qgStreak'),
+        qTime = document.getElementById('qgTime'), qBtn = document.getElementById('qgBtn');
+  let qi = -1, score = 0, streak = 0, answered = false, results = [], qTimer = null, qStart = 0;
+  const LIM = 20000;
+  QS.forEach(()=>{ const d=document.createElement('span'); d.className='qg-dot'; qDots.appendChild(d); });
+  function stopTimer(){ cancelAnimationFrame(qTimer); qTimer=null; }
+  function runTimer(){ const f = Math.max(0, 1-(Date.now()-qStart)/LIM); qTime.style.transform=`scaleX(${f})`; qTime.style.background = f<.25 ? '#b23a48' : '#8fb9a8';
+    if (f<=0 && !answered) { pick(-1); return; } if(!answered) qTimer=requestAnimationFrame(runTimer); }
+  function showQ(){
+    const Q = QS[qi]; answered=false;
+    qQ.textContent = `${qi+1}. ${Q.q}`;
+    qO.innerHTML=''; qF.className='qg-fb'; qF.innerHTML='';
+    Q.o.forEach((txt,k)=>{ const b=document.createElement('button'); b.className='qg-opt';
+      b.innerHTML=`<span class="L">${'ABCD'[k]}</span><span>${txt}</span>`; b.onclick=e=>{e.stopPropagation();pick(k);}; qO.appendChild(b); });
+    [...qDots.children].forEach((d,k)=>d.classList.toggle('cur',k===qi));
+    qBtn.textContent='Next question ›'; qBtn.style.visibility='hidden';
+    qStart=Date.now(); stopTimer(); qTimer=requestAnimationFrame(runTimer);
+  }
+  function pick(k){
+    if(answered) return; answered=true; stopTimer();
+    const Q=QS[qi], ok=k===Q.a, btns=[...qO.children];
+    btns.forEach((b,j)=>{ b.disabled=true; if(j===Q.a) b.classList.add('ok'); else if(j===k) b.classList.add('bad'); });
+    if(ok){ score++; streak++; } else streak=0;
+    results.push({t:Q.t, ok});
+    qScore.textContent=score;
+    qStreak.textContent = streak>=2 ? `🔥 ${streak} in a row` : '';
+    qDots.children[qi].classList.remove('cur'); qDots.children[qi].classList.add(ok?'ok':'bad');
+    qF.className='qg-fb show '+(ok?'ok':'bad');
+    qF.innerHTML=`<b>${ok?'Correct.':(k<0?'Time\'s up. ':'Not quite. ')+'The answer is '+'ABCD'[Q.a]+'.'}</b>${Q.e}`;
+    qBtn.textContent = qi===QS.length-1 ? 'See results ›' : 'Next question ›'; qBtn.style.visibility='visible';
+  }
+  function finish(){
+    qgEl.classList.add('done'); stopTimer();
+    const pct = score/QS.length;
+    document.getElementById('qgResTitle').textContent = pct===1?'Perfect score. Veil fully lifted.':pct>=.7?'Strong result.':pct>=.4?'Getting there.':'Time to revisit the slides.';
+    document.getElementById('qgResText').textContent = `You got ${score} of ${QS.length}. Here's how each topic went:`;
+    const by={}; results.forEach(r=>{ by[r.t]=by[r.t]||{n:0,ok:0}; by[r.t].n++; if(r.ok) by[r.t].ok++; });
+    const bars=document.getElementById('qgBars'); bars.innerHTML='';
+    Object.entries(by).forEach(([t,v])=>{ const row=document.createElement('div'); row.className='bar';
+      row.innerHTML=`<span>${t}</span><span class="t"><i style="width:0%;background:${v.ok===v.n?'#0f6b53':v.ok?'#c9a227':'#b23a48'}"></i></span><b>${v.ok}/${v.n}</b>`;
+      bars.appendChild(row); setTimeout(()=>row.querySelector('i').style.width=(v.ok/v.n*100)+'%',60); });
+    qBtn.textContent='Play again ↻'; qBtn.style.visibility='visible';
+    if(pct>=.7){ const c=document.getElementById('qgConf'); c.innerHTML='';
+      for(let i=0;i<60;i++){ const sp=document.createElement('span'); sp.style.left=Math.random()*100+'%';
+        sp.style.background=['#c9a227','#0f6b53','#2f3c7e','#8fb9a8','#b23a48'][i%5]; sp.style.animationDelay=Math.random()*.8+'s'; c.appendChild(sp); } }
+  }
+  function resetQuiz(){ qi=-1; score=0; streak=0; results=[]; qScore.textContent='0'; qStreak.textContent=''; qgEl.classList.remove('done');
+    document.getElementById('qgConf').innerHTML=''; [...qDots.children].forEach(d=>d.className='qg-dot');
+    qQ.textContent='Ready? Seven questions, 20 seconds each.'; qO.innerHTML=''; qF.className='qg-fb'; qTime.style.transform='scaleX(1)'; qBtn.textContent='Start quiz'; qBtn.style.visibility='visible'; }
+  function quizAdvance(){ if(qgEl.classList.contains('done')){ resetQuiz(); return; } if(qi>=0 && !answered) return;
+    if(qi===QS.length-1){ finish(); return; } qi++; showQ(); }
+  qBtn.addEventListener('click', e=>{ e.stopPropagation(); quizAdvance(); });
+  resetQuiz();
+  const quizIndex = slides.indexOf(document.getElementById('quizSlide'));
+
   const fromHash = () => { const h = parseInt(location.hash.slice(1)); if (!isNaN(h) && h-1 !== cur) go(h-1); };
-  go(0); fromHash(); addEventListener('hashchange', fromHash);
+  const h0 = parseInt(location.hash.slice(1)); go(isNaN(h0) ? 0 : h0-1); addEventListener('hashchange', fromHash);
 })();
 </script>
 </body>

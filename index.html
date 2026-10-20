@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lifting the Corporate Veil</title>
+<meta name="description" content="Saudi Arabia vs UK company law: an interactive presentation for Company Law 342.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14171f; --ink2:#1d2230; --paper:#f6f8f7; --card:#ffffff; --mist:#e8efec;
+  --emerald:#0f6b53; --emerald-2:#17896b; --indigo:#2f3c7e; --indigo-2:#4656a8;
+  --gold:#c9a227; --red:#b23a48; --slate:#5c6b73; --sage:#8fb9a8;
+  --serif:"Fraunces",Cambria,Georgia,serif; --sans:"IBM Plex Sans",Calibri,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);color:var(--ink);font-family:var(--sans);overflow:hidden}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* ---------- stage ---------- */
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--paper);border-radius:14px;overflow:hidden;padding:52px 64px 56px;
+  opacity:0;visibility:hidden;transform:translateX(40px) scale(.985);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1),visibility 0s .6s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.slide.prev{transform:translateX(-40px) scale(.985)}
+.slide.dark{background:radial-gradient(1200px 700px at 15% 110%,#1f3a33 0%,var(--ink) 55%) ,var(--ink);color:#fff}
+
+/* reveal animation */
+.r{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.slide.active .r{opacity:1;transform:none;transition-delay:calc(var(--d,0) * 90ms + 150ms)}
+
+/* ---------- common slide parts ---------- */
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:26px}
+h2{font-family:var(--serif);font-weight:700;font-size:40px;line-height:1.1;letter-spacing:-.01em;max-width:900px}
+.sub{font-size:16px;color:var(--slate);font-style:italic;margin-top:8px}
+.chip{display:flex;align-items:center;gap:10px;background:var(--mist);border-radius:999px;padding:9px 16px;font-size:14px;white-space:nowrap}
+.chip i{width:12px;height:12px;border-radius:50%;display:block}
+.chip b{font-weight:700}
+.foot{position:absolute;left:64px;right:64px;bottom:20px;display:flex;justify-content:space-between;font-size:12px;color:var(--slate)}
+.card{background:var(--card);border-radius:16px;box-shadow:0 1px 2px rgba(20,23,31,.06),0 8px 24px rgba(20,23,31,.06);padding:24px}
+.ink-box{background:var(--ink);color:#fff;border-radius:16px;padding:20px 26px}
+.ink-box .k{color:var(--gold);font-weight:700}
+.gold-box{background:rgba(201,162,39,.16);border-radius:16px;padding:16px 24px;font-size:17px}
+.ico{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ico svg{width:26px;height:26px}
+.label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+h3{font-family:var(--serif);font-size:24px;font-weight:700;line-height:1.15}
+p,li{font-size:17px;line-height:1.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+
+/* ---------- title ---------- */
+.title-wrap{position:absolute;left:80px;right:300px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center}
+.kicker{color:var(--gold);letter-spacing:.22em;font-size:14px;font-weight:600;margin-bottom:28px}
+.title-wrap h1{font-family:var(--serif);font-size:68px;line-height:1.02;font-weight:700;letter-spacing:-.02em}
+.title-wrap h1 em{font-style:italic;color:var(--sage);font-weight:500}
+.title-wrap .lede{font-size:22px;color:#c9d6d1;margin-top:22px}
+.names{position:absolute;left:80px;bottom:56px;font-size:17px;color:#e4ece9;letter-spacing:.02em}
+.veil-strips{position:absolute;right:120px;top:0;bottom:0;width:220px}
+.veil-strips span{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,rgba(143,185,168,.0),rgba(143,185,168,.22),rgba(143,185,168,.05));animation:sway 7s ease-in-out infinite}
+.veil-strips span:nth-child(1){left:0;width:70px}
+.veil-strips span:nth-child(2){left:60px;width:80px;animation-delay:-2s;opacity:.7}
+.veil-strips span:nth-child(3){left:130px;width:60px;animation-delay:-4s;opacity:.5}
+@keyframes sway{0%,100%{transform:skewX(0deg) translateX(0)}50%{transform:skewX(-3deg) translateX(10px)}}
+.hint{position:absolute;right:64px;bottom:56px;font-size:14px;color:#9fb3ac}
+.hint kbd{border:1px solid #4a5560;border-radius:6px;padding:2px 7px;font-family:var(--sans);font-size:12px;margin:0 2px}
+
+/* ---------- roadmap ---------- */
+.part{display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:transform .25s,box-shadow .25s;min-height:380px}
+.part:hover{transform:translateY(-6px);box-shadow:0 14px 34px rgba(20,23,31,.12)}
+.part .top{display:flex;justify-content:space-between;align-items:center}
+.part .num{font-family:var(--serif);font-size:44px;color:#c4cfcb;font-weight:700}
+.part .who{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--slate);font-weight:600}
+.part .go{color:var(--indigo);font-weight:700}
+
+/* ---------- veil diagram ---------- */
+.veil-demo{position:relative;height:262px;margin-bottom:10px}
+.v-node{position:absolute;top:20px;width:290px;height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;font-weight:600;font-size:18px}
+.v-node.sh{left:0}.v-node.co{left:392px}.v-node.cr{right:0}
+.v-veil{position:absolute;left:318px;top:0;width:48px;height:236px;border-radius:10px;
+  background:linear-gradient(90deg,rgba(201,162,39,.25),rgba(201,162,39,.75),rgba(201,162,39,.25));transition:all .7s cubic-bezier(.2,.8,.2,1)}
+.v-veil::after{content:"THE VEIL";position:absolute;top:244px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--gold);white-space:nowrap}
+.v-claim{position:absolute;top:112px;right:290px;height:6px;width:100px;background:var(--indigo);border-radius:3px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.v-claim::before{content:"";position:absolute;left:-10px;top:-7px;border:10px solid transparent;border-right:12px solid var(--indigo);border-left:0}
+.v-tag{position:absolute;right:0;top:226px;width:290px;text-align:center;font-size:14px;color:var(--slate);font-style:italic}
+.veil-demo.pierced .v-claim{width:612px;background:var(--red)}
+.veil-demo.pierced .v-claim::before{border-right-color:var(--red)}
+.veil-demo.pierced .v-veil{transform:scaleY(.15) ;opacity:.35}
+.veil-demo.pierced .v-node.sh{box-shadow:0 0 0 3px var(--red),0 10px 30px rgba(178,58,72,.25)}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:10px 20px;font-weight:700;font-size:15px;background:var(--ink);color:#fff;transition:background .2s,transform .15s}
+.btn:hover{background:#2c3242}.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.pierce-btn{position:absolute;right:64px;top:120px}
+
+/* ---------- lists ---------- */
+ul.dots{list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.dots li{padding-left:22px;position:relative}
+ul.dots li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--sage)}
+
+/* ---------- salomon steps ---------- */
+.step-n{width:44px;height:44px;border-radius:50%;background:var(--emerald);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px}
+
+/* ---------- timeline (saudi) ---------- */
+.reg-line{position:relative;height:84px;margin:4px 0 18px}
+.reg-line .bar{position:absolute;left:0;right:0;top:20px;height:3px;background:#c6d1cd}
+.reg-line .zone{position:absolute;left:0;width:47%;top:14px;height:15px;border-radius:8px;background:repeating-linear-gradient(45deg,rgba(178,58,72,.55) 0 8px,rgba(178,58,72,.3) 8px 16px)}
+.reg-line .dot{position:absolute;left:47%;top:8px;width:28px;height:28px;border-radius:50%;background:var(--emerald);border:5px solid var(--paper);transform:translateX(-50%)}
+.reg-line .l1{position:absolute;left:0;top:46px;color:var(--red);font-weight:700;font-size:15px}
+.reg-line .l2{position:absolute;left:49%;top:46px;color:var(--emerald);font-weight:700;font-size:15px}
+
+/* ---------- article rows ---------- */
+.art-row{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center}
+.art-tag{background:var(--emerald);color:#fff;border-radius:12px;padding:14px 8px;text-align:center;font-weight:700;font-size:15px}
+.art-row p{font-size:16px}
+
+/* ---------- case timeline ---------- */
+.ctl{position:relative}
+.ctl .rail{position:absolute;left:20px;right:20px;top:26px;height:3px;background:#c6d1cd}
+.case{position:relative}
+.case .yr{display:flex;align-items:center;gap:12px;margin-bottom:20px;position:relative;z-index:1}
+.case .yr i{width:24px;height:24px;border-radius:50%;border:5px solid var(--paper);display:block;box-sizing:content-box}
+.case .yr span{font-family:var(--serif);font-size:30px;font-weight:700;background:var(--paper);padding-right:8px}
+.case .card{min-height:300px;display:flex;flex-direction:column;gap:12px}
+.case h4{font-size:19px;font-style:italic;line-height:1.25}
+.case p{font-size:15.5px}
+.verdict{margin-top:auto;font-size:13px;letter-spacing:.14em;font-weight:700}
+
+/* ---------- table ---------- */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:15.5px}
+.cmp th{text-align:left;padding:12px 16px;color:#fff;font-size:16px}
+.cmp th:first-child{background:none}
+.cmp th.ksa{background:var(--emerald);border-radius:12px 0 0 12px}
+.cmp th.uk{background:var(--indigo);border-radius:0 12px 12px 0}
+.cmp td{background:#fff;padding:11px 16px;line-height:1.4;transition:background .2s}
+.cmp td:first-child{background:var(--mist);font-weight:700;border-radius:12px 0 0 12px;width:210px}
+.cmp td:last-child{border-radius:0 12px 12px 0}
+.cmp tr:hover td{background:#fbf6e6}
+.cmp tr:hover td:first-child{background:#f3e7bd}
+
+/* ---------- flip cards ---------- */
+.flip{perspective:1400px;height:228px;cursor:pointer}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:22px 24px}
+.flip .front{background:#fff;box-shadow:0 1px 2px rgba(20,23,31,.06),0 8px 24px rgba(20,23,31,.06);display:flex;flex-direction:column;gap:10px}
+.flip .front .row{display:flex;gap:14px;align-items:center}
+.flip .front p{font-size:16px}
+.flip .front .tap{margin-top:auto;align-self:flex-end;font-weight:700;color:var(--indigo);font-size:14px}
+.flip .back{background:var(--ink);color:#fff;transform:rotateY(180deg);display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.back .j{font-size:12px;letter-spacing:.14em;font-weight:700;text-transform:uppercase}
+.back .j.uk{color:#9aa8ef}.back .j.ksa{color:var(--sage)}
+.back .v{font-family:var(--serif);font-size:30px;font-weight:700;margin:4px 0 6px}
+.back .v.no{color:#ff8f9c}.back .v.yes{color:var(--gold)}
+.back p{font-size:13.5px;line-height:1.45;color:#dfe6e3}
+
+/* ---------- conclusion ---------- */
+.big-n{font-family:var(--serif);font-size:70px;font-weight:700;color:var(--gold);line-height:1}
+.closer{font-family:var(--serif);font-style:italic;font-size:28px;color:var(--emerald);text-align:center;margin-top:34px}
+
+/* ---------- refs ---------- */
+.refs h4{color:var(--emerald);font-size:15px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}
+.refs p{font-size:15px;line-height:1.45;margin-bottom:8px;padding-left:22px;text-indent:-22px}
+
+/* ---------- chrome ---------- */
+#bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
+  background:rgba(20,23,31,.78);backdrop-filter:blur(10px);color:#fff;border-radius:999px;padding:6px 8px;font-size:14px;z-index:20;transition:opacity .4s}
+#bar button{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#dfe6e3}
+#bar button:hover{background:rgba(255,255,255,.12)}
+#bar button.on{background:var(--gold);color:var(--ink)}
+#bar svg{width:18px;height:18px}
+#count{min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+#timer{min-width:58px;text-align:center;font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600}
+body.idle #bar{opacity:0}
+#progress{position:fixed;left:0;right:0;top:0;height:5px;display:flex;z-index:20}
+#progress span{flex:1;opacity:.25;transition:opacity .3s;margin-right:2px}
+#progress span.done{opacity:1}
+
+#notes{position:fixed;left:50%;bottom:70px;transform:translate(-50%,20px);width:min(900px,94vw);max-height:42vh;overflow:auto;
+  background:#fff;color:var(--ink);border-radius:16px;padding:20px 24px;box-shadow:0 20px 60px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .3s;z-index:19}
+#notes.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#notes h5{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin-bottom:8px}
+#notes p{font-size:16px;line-height:1.55;white-space:pre-line}
+
+#overview{position:fixed;inset:0;background:rgba(14,16,22,.96);z-index:30;display:none;overflow:auto;padding:40px}
+#overview.show{display:block}
+#overview .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;max-width:1300px;margin:0 auto}
+#overview .tile{background:#1d2230;border-radius:12px;padding:16px;color:#fff;cursor:pointer;border:2px solid transparent;min-height:110px;display:flex;flex-direction:column;gap:8px;text-align:left}
+#overview .tile:hover{border-color:var(--gold)}
+#overview .tile.cur{border-color:var(--sage)}
+#overview .tile small{color:#9fb3ac}
+#overview .tile b{font-family:var(--serif);font-size:18px;font-weight:600}
+#overview h6{color:#fff;font-size:20px;font-family:var(--serif);margin:0 auto 20px;max-width:1300px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="viewport"><div id="stage">
+
+<!-- 1 TITLE -->
+<section class="slide dark" data-speaker="1" data-title="Title" data-notes="Good morning. Our paper looks at one question at the centre of company law: when should the law look past the company and hold the people behind it responsible?
+We answer it by comparing Saudi Arabia's Companies Law of 2022 with the UK position built by the courts and the Insolvency Act 1986.
+I'll set out the foundations, Monerah will take you through the Saudi and UK frameworks, and Nouran will compare them, run a short interactive exercise with you, and conclude.">
+  <div class="veil-strips"><span></span><span></span><span></span></div>
+  <div class="title-wrap">
+    <div class="kicker r">COMPANY LAW 342 &nbsp;·&nbsp; PROF. JAWAHITHA SARABDEEN</div>
+    <h1 class="r" style="--d:1">Lifting the Corporate Veil <em>in Saudi Arabia</em></h1>
+    <div class="lede r" style="--d:2">A critical and comparative analysis with UK company law</div>
+  </div>
+  <div class="names r" style="--d:3">Eman AlFires &nbsp;·&nbsp; Monerah AlSheikh &nbsp;·&nbsp; Nouran AlQahtani</div>
+  <div class="hint r" style="--d:4"><kbd>→</kbd> next &nbsp; <kbd>N</kbd> notes &nbsp; <kbd>O</kbd> overview &nbsp; <kbd>T</kbd> timer</div>
+</section>
+
+<!-- 2 ROADMAP -->
+<section class="slide" data-speaker="1" data-title="Roadmap" data-notes="Here's how the next fifteen minutes run. Part one is the theory: what the veil is and why the law protects it. Part two is the law itself in each jurisdiction. Part three puts them side by side, tests them on four short scenarios with you, and gives our verdict.">
+  <div class="head"><h2 class="r">Roadmap: 15 minutes, three parts</h2><div class="chip r"><i style="background:var(--emerald)"></i><b>Eman</b> 0:00 – 5:00</div></div>
+  <div class="grid3">
+    <div class="card part r" style="--d:1" data-go="3">
+      <div class="top"><div class="ico" style="background:var(--emerald)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2 2 7v2h20V7L12 2Zm-7 9v7h2v-7H5Zm4 0v7h2v-7H9Zm4 0v7h2v-7h-2Zm4 0v7h2v-7h-2ZM3 20v2h18v-2H3Z"/></svg></div><div class="num">01</div></div>
+      <h3>Foundations</h3><p>Separate personality, limited liability and <i>Salomon</i></p>
+      <div class="who"><span>Eman · 0:00–5:00</span><span class="go">Jump ›</span></div>
+    </div>
+    <div class="card part r" style="--d:2" data-go="6">
+      <div class="top"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M11 3v2H6l-4 8c0 1.7 1.8 3 4 3s4-1.3 4-3L6.9 7H11v13H6v2h12v-2h-5V7h4.1L14 13c0 1.7 1.8 3 4 3s4-1.3 4-3l-4-8h-5V3h-2ZM6 9.2 7.9 13H4.1L6 9.2Zm12 0 1.9 3.8h-3.8L18 9.2Z"/></svg></div><div class="num">02</div></div>
+      <h3>The two legal frameworks</h3><p>Saudi Companies Law 2022, and the UK statute and case-law route</p>
+      <div class="who"><span>Monerah · 5:00–10:00</span><span class="go">Jump ›</span></div>
+    </div>
+    <div class="card part r" style="--d:3" data-go="11">
+      <div class="top"><div class="ico" style="background:var(--gold)"><svg viewBox="0 0 24 24" fill="#14171f"><path d="m14.6 2.6 6.8 6.8-2.1 2.1-1.1-1.1-4.2 4.2 1.1 1.1-2.1 2.1-6.8-6.8 2.1-2.1 1.1 1.1 4.2-4.2-1.1-1.1 2.1-2.1ZM8.3 15.3l1.4 1.4L4.4 22 3 20.6l5.3-5.3Z"/></svg></div><div class="num">03</div></div>
+      <h3>Comparison and verdict</h3><p>Side by side, a live “pierce or not?” test, critique and conclusion</p>
+      <div class="who"><span>Nouran · 10:00–15:00</span><span class="go">Jump ›</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 3 VEIL -->
+<section class="slide" data-speaker="1" data-title="The problem" data-notes="Picture three groups. On the left, the shareholders and directors. In the middle, the company, which the law treats as a person in its own right. On the right, everyone who deals with it: lenders, suppliers, employees, people it harms.
+The veil sits between the company and the people behind it. A creditor's claim normally stops at the company.
+(Click 'Pierce the veil'.) Piercing means the claim goes through the company and reaches the people behind it. The question is when the law allows that.
+In almost every company there are real people making the decisions, so the structure can be used to do things they couldn't lawfully do in their own name.
+So our research question is how each system balances the company's independence against that risk of misuse. We separate true veil piercing from other routes to personal liability, like directors' statutory duties. Most personal liability in both systems comes through those other routes.">
+  <div class="head"><h2 class="r">One company, two sets of interests</h2><div class="chip r"><i style="background:var(--emerald)"></i><b>Eman</b> 0:00 – 5:00</div></div>
+  <div class="veil-demo r" style="--d:1" id="veilDemo">
+    <div class="card v-node sh"><div class="ico" style="background:var(--slate)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM9 13c-3.3 0-7 1.7-7 4v3h14v-3c0-2.3-3.7-4-7-4Zm8 0c-.5 0-1 0-1.6.1 1.6 1 2.6 2.3 2.6 3.9v3h5v-3c0-2.3-3-4-6-4Z"/></svg></div>Shareholders<br>&amp; directors</div>
+    <div class="v-veil"></div>
+    <div class="card v-node co"><div class="ico" style="background:var(--emerald)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M4 22V3h11v4h5v15h-6v-4h-4v4H4Zm3-14h2V6H7v2Zm4 0h2V6h-2v2Zm-4 4h2v-2H7v2Zm4 0h2v-2h-2v2Zm4 0h2v-2h-2v2Zm-8 4h2v-2H7v2Zm8 0h2v-2h-2v2Z"/></svg></div>The company<br>(separate person)</div>
+    <div class="v-claim"></div>
+    <div class="card v-node cr"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12.2 5.2 9.6 7.8a1 1 0 0 0 1.4 1.4l2.1-2.1 5.3 5.3 1.5-1.5L23 8.8 18.2 4l-2 2-2.6-2-1.4 1.2ZM1 8.8 4.9 12.7l1.4-1.4 5.7 5.7a1 1 0 0 0 1.4-1.4l.7.7a1 1 0 0 0 1.4-1.4l.7.7a1 1 0 0 0 1.4-1.4l-5.1-5.1-1.4 1.4a3 3 0 0 1-4.2-4.2l1.3-1.3L5.8 4 1 8.8Z"/></svg></div>Creditors &amp;<br>third parties</div>
+    <div class="v-tag" id="vTag">claims stop at the company</div>
+  </div>
+  <div class="r" style="--d:2;margin:-4px 0 18px"><button class="btn gold" id="pierce">Pierce the veil</button></div>
+  <div class="ink-box r" style="--d:3;font-size:19px;line-height:1.5"><span class="k">Research question&nbsp;&nbsp;</span>How do Saudi law and UK law balance a company's independence against the risk that the people behind it misuse that independence to escape personal liability?</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 4 TWO IDEAS -->
+<section class="slide" data-speaker="1" data-title="Two ideas" data-notes="These two ideas travel together but answer different questions.
+Separate legal personality answers 'who is the party?' The company holds its own property and owes its own debts.
+Limited liability answers 'how much can an investor lose?' As Cornell's Legal Information Institute puts it, limited liability generally protects investors from personal responsibility for the entity's debts. The cap is their contribution.
+You can have one without the other: a Saudi joint liability company has legal personality, yet its partners are personally liable for its debts.
+The trade-off at the bottom is the heart of the topic. Investors get a capped downside, creditors absorb what's left. That's why an unpaid company debt should never, on its own, make the owners personally liable.">
+  <div class="head"><h2 class="r">Two ideas that are often confused</h2><div class="chip r"><i style="background:var(--emerald)"></i><b>Eman</b> 0:00 – 5:00</div></div>
+  <div class="grid2" style="margin-bottom:22px">
+    <div class="card r" style="--d:1;min-height:300px">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:18px"><div class="ico" style="background:var(--emerald)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M4 22V3h11v4h5v15h-6v-4h-4v4H4Zm3-14h2V6H7v2Zm4 0h2V6h-2v2Zm-4 4h2v-2H7v2Zm4 0h2v-2h-2v2Zm4 0h2v-2h-2v2Zm-8 4h2v-2H7v2Zm8 0h2v-2h-2v2Z"/></svg></div><div><h3>Separate legal personality</h3><div class="sub" style="margin-top:2px">Who is the party?</div></div></div>
+      <ul class="dots"><li>The company owns property, contracts, sues and is sued in its own name</li><li>Its rights and debts are its own, not its members'</li><li>Exists even with one dominant shareholder</li></ul>
+    </div>
+    <div class="card r" style="--d:2;min-height:300px">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:18px"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Z"/></svg></div><div><h3>Limited liability</h3><div class="sub" style="margin-top:2px">How much can an investor lose?</div></div></div>
+      <ul class="dots"><li>A member's exposure is capped at their capital contribution</li><li>Unpaid company debts do not become personal debts</li><li>Makes passive investment and risk-taking possible</li></ul>
+    </div>
+  </div>
+  <div class="gold-box r" style="--d:3"><b>The trade-off:</b> investors get a capped risk, and creditors carry what is left. The veil is the price the law pays for investment, so it lifts it only for good reason.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 5 SALOMON -->
+<section class="slide" data-speaker="1" data-title="Salomon (1897)" data-notes="Salomon is the starting point for both of our systems.
+Aron Salomon turned his boot business into a company. He held 20,001 of the 20,007 shares; his family held one each. He also took secured debentures. When the company failed, the liquidator argued it was really just Salomon under another name.
+The House of Lords disagreed. Once the formalities are met, the company is a different person from its members, however much one of them controls it. Salomon wasn't liable, and as a secured creditor he was paid ahead of unsecured creditors.
+The Saudi Companies Law reaches the same place through statute: a company acquires legal personality on registration in the Commercial Register.
+So the real question isn't whether the veil exists. It's when each system lets a claimant get past it. Monerah will now show how Saudi law and UK law answer that.">
+  <div class="head"><div><h2 class="r">Salomon v A Salomon &amp; Co Ltd</h2><div class="sub r">[1897] AC 22 (HL)</div></div><div class="chip r"><i style="background:var(--emerald)"></i><b>Eman</b> 0:00 – 5:00</div></div>
+  <div class="grid3" style="margin-bottom:22px">
+    <div class="card r" style="--d:1;min-height:230px"><div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="step-n">1</div><h3>Facts</h3></div><p>Aron Salomon sold his boot business to a company he formed. He held 20,001 of 20,007 shares and secured debentures.</p></div>
+    <div class="card r" style="--d:2;min-height:230px"><div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="step-n">2</div><h3>Dispute</h3></div><p>The company became insolvent. The liquidator argued it was only Salomon's agent, so he should pay its debts.</p></div>
+    <div class="card r" style="--d:3;min-height:230px"><div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><div class="step-n">3</div><h3>Held</h3></div><p>The company was validly formed and a separate person. Salomon was not liable, and ranked as a secured creditor.</p></div>
+  </div>
+  <div class="ink-box r" style="--d:4;display:flex;gap:22px;align-items:center">
+    <div class="ico" style="background:var(--gold);width:64px;height:64px"><svg viewBox="0 0 24 24" fill="#14171f"><path d="M11 3v2H6l-4 8c0 1.7 1.8 3 4 3s4-1.3 4-3L6.9 7H11v13H6v2h12v-2h-5V7h4.1L14 13c0 1.7 1.8 3 4 3s4-1.3 4-3l-4-8h-5V3h-2Z"/></svg></div>
+    <p><span class="k">Why it still matters&nbsp;&nbsp;</span>Control by one person does not defeat separate personality. This is the baseline both systems start from: in Saudi Arabia, Article 9 of the Companies Law gives a company legal personality on registration in the Commercial Register.</p>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 6 SAUDI REGISTRATION -->
+<section class="slide" data-speaker="2" data-title="KSA: registration" data-notes="Thank you, Eman. Saudi Arabia's rules sit in the Companies Law issued by Royal Decree M/132 in 1443H, in force since January 2023.
+Saudi law doesn't build veil piercing as one court-made doctrine. The statute names specific situations where individuals answer personally. The first group is about timing.
+Under Article 9, the company becomes a legal person when it's registered in the Commercial Register. Before that, it has personality only so far as needed to complete incorporation. If incorporation isn't completed, those who acted in the company's name are jointly and personally liable to third parties.
+Article 8 adds a duty to register the company's documents. Those responsible who fail are jointly and severally liable for the damage.
+The trigger here is objective. A claimant doesn't need to prove fraud, only that the formal step didn't happen. That's the opposite of the UK test you'll see in a moment.">
+  <div class="head"><div><h2 class="r">Saudi Arabia: personality starts at registration</h2><div class="sub r">Companies Law, Royal Decree No (M/132) dated 1/12/1443H, in force 19 January 2023</div></div><div class="chip r"><i style="background:var(--indigo)"></i><b>Monerah</b> 5:00 – 10:00</div></div>
+  <div class="reg-line r" style="--d:1"><div class="bar"></div><div class="zone"></div><div class="dot"></div>
+    <div class="l1">Exposure zone: founders act before the company fully exists</div><div class="l2">Registration in the Commercial Register → legal person</div></div>
+  <div class="grid2">
+    <div class="card r" style="--d:2;min-height:270px"><div class="label" style="color:var(--emerald)">Article 9</div><h3 style="margin:8px 0 12px">Personality on registration</h3><p>A company acquires legal personality on registration. During incorporation it has personality only as far as incorporation needs. If incorporation is not completed, the persons who acted in its name are <b>jointly and personally liable</b> to third parties.</p></div>
+    <div class="card r" style="--d:3;min-height:270px"><div class="label" style="color:var(--emerald)">Article 8</div><h3 style="margin:8px 0 12px">Duty to register documents</h3><p>The persons responsible must register the company's documents and amendments. If they fail to, they are <b>jointly and severally liable</b> for any damage that results.</p></div>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 7 SAUDI DIRECTORS -->
+<section class="slide" data-speaker="2" data-title="KSA: directors" data-notes="The second group of Saudi rules targets the people who run the company.
+Articles 26 and 27 set duties of care and loyalty, and bar conflicts and competition without approval.
+Article 28 is the most important provision for our topic. Managers and board members are jointly liable to compensate the company, its partners or shareholders, or third parties, for damage from breaching the Law or the articles, or from error or negligence. A clause excluding this is void.
+Under Article 242(2), members who resolve to dissolve when the assets can't cover the debts become jointly liable for those debts. Under Article 209, partners in a professional company answer personally for their own professional errors.
+On the right, the Sharia layer. Courts apply Sharia principles against harm and fraud, and Vogel describes how much discretion that leaves judges. That could reach misuse the statute doesn't list, but because so few commercial judgments are published, we can't say how often it does.">
+  <div class="head"><h2 class="r">Saudi Arabia: liability that reaches outsiders</h2><div class="chip r"><i style="background:var(--indigo)"></i><b>Monerah</b> 5:00 – 10:00</div></div>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:26px;margin-bottom:18px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="art-row r" style="--d:1"><div class="art-tag">Arts 26–27</div><p>Managers and board members owe duties of care and loyalty, and may not hold conflicting interests or compete without approval.</p></div>
+      <div class="art-row r" style="--d:2"><div class="art-tag" style="background:var(--gold);color:var(--ink)">Art 28</div><p>Jointly liable to compensate the company, partners, shareholders <b>or third parties</b> for breach of the Law or articles, or error or negligence. Exclusion clauses are void.</p></div>
+      <div class="art-row r" style="--d:3"><div class="art-tag">Art 242(2)</div><p>Members who resolve to dissolve when assets cannot cover debts become jointly liable for the outstanding debts.</p></div>
+      <div class="art-row r" style="--d:4"><div class="art-tag">Art 209</div><p>Partners in a professional company are personally liable for their own professional errors.</p></div>
+    </div>
+    <div class="ink-box r" style="--d:3;padding:26px">
+      <div class="ico" style="background:var(--gold);margin-bottom:16px"><svg viewBox="0 0 24 24" fill="#14171f"><path d="M12 6.5C10 5 7.3 4.5 3 4.5v14c4.3 0 7 .5 9 2 2-1.5 4.7-2 9-2v-14c-4.3 0-7 .5-9 2Zm-1 11.6c-1.7-.8-3.8-1.2-6-1.4V6.6c2.6.2 4.5.7 6 1.6v9.9Z"/></svg></div>
+      <h3 style="color:#fff;margin-bottom:10px">The Sharia layer</h3>
+      <p style="font-size:16px;color:#dfe6e3">Saudi courts apply Sharia principles that forbid harm and fraud. In theory this gives judges room to reach misuse the statute does not list (Vogel, 2000). In practice it is hard to measure, because few commercial judgments are published.</p>
+    </div>
+  </div>
+  <div class="gold-box r" style="--d:5"><b>Key point:</b> Article 28 lets third parties claim directly against managers and board members. UK law offers outsiders no equivalent route outside insolvency.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 8 UK STATUTE -->
+<section class="slide" data-speaker="2" data-title="UK: statute" data-notes="The UK starts from Salomon and treats limited liability as the norm. In practice, most personal liability doesn't come from piercing at all. It comes from statute.
+Section 213 of the Insolvency Act targets fraudulent trading: anyone knowingly party to carrying on the business with intent to defraud creditors.
+Section 214 targets wrongful trading. A director who knew, or ought to have concluded, that insolvent liquidation couldn't reasonably be avoided can be ordered to contribute, unless they took every step to minimise creditors' losses.
+Two limits matter. These provisions hold people responsible for their own conduct; the company stays a separate person. And they only bite once the company is in insolvent liquidation, with the money going to all creditors, not one claimant.">
+  <div class="head"><div><h2 class="r">United Kingdom: statute does most of the work</h2><div class="sub r">Insolvency Act 1986: personal liability for your own conduct, with the veil left intact</div></div><div class="chip r"><i style="background:var(--indigo)"></i><b>Monerah</b> 5:00 – 10:00</div></div>
+  <div class="grid2" style="margin-bottom:22px">
+    <div class="card r" style="--d:1;min-height:300px">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:18px"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a5 5 0 0 0-5 5v1H5l1 3h12l1-3h-2V7a5 5 0 0 0-5-5Zm-6 11c0 4 3 9 6 9s6-5 6-9H6Zm3 1.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg></div><div><div class="label" style="color:var(--indigo)">s 213</div><h3>Fraudulent trading</h3></div></div>
+      <p style="margin-bottom:10px"><b>Who:</b> any person knowingly party to the business</p>
+      <p><b>Test:</b> business carried on with intent to defraud creditors, or for any fraudulent purpose</p>
+    </div>
+    <div class="card r" style="--d:2;min-height:300px">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:18px"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2 1 21h22L12 2Zm1 16h-2v-2h2v2Zm0-4h-2V9h2v5Z"/></svg></div><div><div class="label" style="color:var(--indigo)">s 214</div><h3>Wrongful trading</h3></div></div>
+      <p style="margin-bottom:10px"><b>Who:</b> directors and shadow directors</p>
+      <p><b>Test:</b> knew, or ought to have concluded, that insolvent liquidation could not reasonably be avoided. <b>Defence:</b> took every step to minimise creditors' loss</p>
+    </div>
+  </div>
+  <div class="ink-box r" style="--d:3;font-size:17px"><span class="k">Remedy&nbsp;&nbsp;</span>the court orders a contribution to the company's assets for all creditors. Only available once the company is in insolvent liquidation.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 9 UK CASES -->
+<section class="slide" data-speaker="2" data-title="UK: case law" data-notes="Alongside statute, the courts kept a narrow power to look behind the company. This timeline shows the door closing.
+In Gilford Motor v Horne, a former employee bound by a covenant not to solicit customers set up a company to do exactly that. The court called it a sham and granted an injunction against both him and the company.
+In Jones v Lipman, a seller transferred land to his own company to avoid completing a sale. Specific performance was ordered against the company.
+Then Adams v Cape Industries in 1990. The Court of Appeal refused to treat a corporate group as one economic unit, and said the veil can't be lifted just because justice seems to require it.
+Finally, Prest v Petrodel in 2013, where the Supreme Court set the modern test.">
+  <div class="head"><h2 class="r">United Kingdom: the courts narrow the door</h2><div class="chip r"><i style="background:var(--indigo)"></i><b>Monerah</b> 5:00 – 10:00</div></div>
+  <div class="ctl"><div class="rail r"></div>
+  <div class="grid4">
+    <div class="case r" style="--d:1"><div class="yr"><i style="background:var(--emerald)"></i><span>1933</span></div><div class="card"><h4>Gilford Motor Co v Horne</h4><p>Ex-employee used a company to dodge a non-solicitation covenant. Injunction against him and the company: a “sham”.</p><div class="verdict" style="color:var(--emerald)">VEIL LIFTED</div></div></div>
+    <div class="case r" style="--d:2"><div class="yr"><i style="background:var(--emerald)"></i><span>1962</span></div><div class="card"><h4>Jones v Lipman</h4><p>Seller moved land into his company to avoid completing a sale. Specific performance ordered against the company.</p><div class="verdict" style="color:var(--emerald)">VEIL LIFTED</div></div></div>
+    <div class="case r" style="--d:3"><div class="yr"><i style="background:var(--red)"></i><span>1990</span></div><div class="card"><h4>Adams v Cape Industries</h4><p>No piercing just because justice seems to require it. A corporate group is not one economic unit.</p><div class="verdict" style="color:var(--red)">VEIL HELD</div></div></div>
+    <div class="case r" style="--d:4"><div class="yr"><i style="background:var(--red)"></i><span>2013</span></div><div class="card"><h4>Prest v Petrodel</h4><p>Piercing limited to the evasion principle, and only as a last resort.</p><div class="verdict" style="color:var(--red)">VEIL HELD</div></div></div>
+  </div></div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 10 PREST -->
+<section class="slide" data-speaker="2" data-title="Prest (2013)" data-notes="In Prest, a wife sought London properties legally owned by companies her husband controlled.
+Lord Sumption drew a line between two ideas. The concealment principle lets a court look behind a company to identify the real actors, but that's not piercing. The evasion principle is real piercing, available only where someone is already under a legal obligation and deliberately evades it through a company they control. Even then, only if no other remedy works.
+On the facts, evasion didn't apply. Yet the wife still won, because the companies held the properties on resulting trust for the husband. Ordinary trust law did what piercing couldn't.
+So the UK position is predictable and protects investment, but leaves little room for creditors whose claims arise after the structure is set up, such as tort victims.
+Nouran will now compare the two systems directly.">
+  <div class="head"><div><h2 class="r">Prest v Petrodel Resources Ltd</h2><div class="sub r">[2013] UKSC 34 · Divorce: London properties held by companies Mr Prest controlled</div></div><div class="chip r"><i style="background:var(--indigo)"></i><b>Monerah</b> 5:00 – 10:00</div></div>
+  <div class="grid2" style="margin-bottom:22px">
+    <div class="card r" style="--d:1;min-height:230px"><div style="display:flex;gap:16px;align-items:center;margin-bottom:14px"><div class="ico" style="background:var(--slate)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg></div><h3>Concealment principle</h3></div><p>The court looks behind the company to find the real actors. This is <b>not</b> piercing: the company's separate personality is respected.</p></div>
+    <div class="card r" style="--d:2;min-height:230px"><div style="display:flex;gap:16px;align-items:center;margin-bottom:14px"><div class="ico" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 21v-2h2V3h10v1h4v15h2v2h-4V6h-2v15H3Zm8-8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg></div><h3>Evasion principle</h3></div><p>Piercing only where a person under an <b>existing legal obligation</b> deliberately evades it through a company they control. Last resort only.</p></div>
+  </div>
+  <div class="ink-box r" style="--d:3;font-size:17px;line-height:1.5"><span class="k">Outcome&nbsp;&nbsp;</span>The veil was not pierced: evasion did not apply. But the companies held the properties on resulting trust for Mr Prest, so they went to his wife through ordinary trust law. A different remedy did the job and the company stayed separate.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 11 COMPARISON -->
+<section class="slide" data-speaker="3" data-title="Side by side" data-notes="Thank you, Monerah. Both systems agree on the starting point: the company is a separate person and limited liability is the norm. The differences are in where exceptions come from and what triggers them.
+Source: the UK relies on statute plus a doctrine narrowed in Prest. Saudi law lists specific situations in the statute, which makes it more predictable in advance, but only for what it covers.
+Trigger: the UK test needs deliberate evasion of an existing duty. Most Saudi triggers are objective; no bad intent needed.
+Directors: the clearest difference. UK directors' duties run to the company, and outsiders mostly reach them through insolvency law. Article 28 gives outsiders a direct claim.
+Judges: UK judges treat piercing as a last resort. Saudi courts have Sharia principles as a wider base, but with few published judgments, that's hard to measure.
+And each has a gap: the UK protects involuntary creditors poorly, and Saudi law has no general anti-abuse rule beyond its listed provisions.">
+  <div class="head"><h2 class="r">Side by side</h2><div class="chip r"><i style="background:var(--gold)"></i><b>Nouran</b> 10:00 – 15:00</div></div>
+  <table class="cmp">
+    <tr class="r" style="--d:1"><th></th><th class="ksa">Saudi Arabia</th><th class="uk">United Kingdom</th></tr>
+    <tr class="r" style="--d:2"><td>Starting point</td><td>Personality on registration (Art 9); members liable up to their contributions</td><td><i>Salomon</i>: separate personality and limited liability as the norm</td></tr>
+    <tr class="r" style="--d:3"><td>Source of exceptions</td><td>Named statutory situations (Arts 8, 9, 28, 242)</td><td>Statute (IA 1986 ss 213–214) plus a narrow common-law doctrine</td></tr>
+    <tr class="r" style="--d:4"><td>What triggers liability</td><td>Mostly objective: failure to register, acting pre-incorporation, breach or negligence</td><td>Deliberate evasion of an existing obligation: hard to prove</td></tr>
+    <tr class="r" style="--d:5"><td>Directors vs third parties</td><td>Direct claim under Art 28</td><td>Mainly via insolvency provisions, for all creditors</td></tr>
+    <tr class="r" style="--d:6"><td>Role of judges</td><td>Sharia principles against harm and fraud; few published judgments</td><td>Piercing as a last resort (<i>Prest</i>)</td></tr>
+    <tr class="r" style="--d:7"><td>Main gap</td><td>No general anti-abuse rule outside listed provisions</td><td>Weak protection for involuntary creditors such as tort victims</td></tr>
+  </table>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 12 QUIZ -->
+<section class="slide" data-speaker="3" data-title="Pierce or not?" data-notes="Let's test the comparison. Four short scenarios. For each one, ask yourselves: in the UK and in Saudi Arabia, does the individual end up personally liable, and is that because the veil is pierced or for some other reason?
+(Ask for a quick show of hands, then click a card to flip it. If time is short, do 1 and 3: they show the sharpest contrast.)
+1 is Jones v Lipman with the names changed. 2 is Adams v Cape. 3 tests Article 9 against Companies Act 2006 s 51. 4 tests wrongful trading against Article 28.">
+  <div class="head"><div><h2 class="r">Your turn: pierce or not?</h2><div class="sub r">Decide for each system, then tap a card to flip it.</div></div><div class="chip r"><i style="background:var(--gold)"></i><b>Nouran</b> 10:00 – 15:00</div></div>
+  <div class="grid2" style="gap:20px">
+    <div class="flip r" style="--d:1"><div class="in">
+      <div class="face front"><div class="row"><div class="ico" style="background:var(--gold);width:48px;height:48px"><span style="font-weight:700;font-size:20px">1</span></div><h3>The land deal</h3></div><p>Ahmed agrees to sell you land, then transfers it to a company he owns so he doesn't have to complete.</p><span class="tap">Flip ↻</span></div>
+      <div class="face back"><div><div class="j uk">United Kingdom</div><div class="v yes">YES</div><p>Evasion principle. An existing duty evaded through his company: <i>Jones v Lipman</i>. Specific performance against the company.</p></div><div><div class="j ksa">Saudi Arabia</div><div class="v yes">LIKELY</div><p>No general piercing article. The claimant relies on Sharia prohibitions on fraud and judicial discretion. Plausible, less predictable.</p></div></div>
+    </div></div>
+    <div class="flip r" style="--d:2"><div class="in">
+      <div class="face front"><div class="row"><div class="ico" style="background:var(--gold);width:48px;height:48px"><span style="font-weight:700;font-size:20px">2</span></div><h3>The overseas subsidiary</h3></div><p>Workers harmed by a foreign subsidiary sue the parent company because the subsidiary has no money.</p><span class="tap">Flip ↻</span></div>
+      <div class="face back"><div><div class="j uk">United Kingdom</div><div class="v no">NO</div><p><i>Adams v Cape</i>: a group is not one economic unit, and using subsidiaries to limit future liability is legitimate.</p></div><div><div class="j ksa">Saudi Arabia</div><div class="v no">NO</div><p>Shareholders liable only up to their contributions. The parent is exposed only if it acted as manager or board member (Art 28).</p></div></div>
+    </div></div>
+    <div class="flip r" style="--d:3"><div class="in">
+      <div class="face front"><div class="row"><div class="ico" style="background:var(--gold);width:48px;height:48px"><span style="font-weight:700;font-size:20px">3</span></div><h3>Signed too early</h3></div><p>Founders sign a supply contract in the company's name before registration. The company is never registered.</p><span class="tap">Flip ↻</span></div>
+      <div class="face back"><div><div class="j uk">United Kingdom</div><div class="v yes">PERSONAL</div><p>Companies Act 2006 s 51: whoever contracts for an unformed company is personally liable. Not piercing: there is no company yet.</p></div><div><div class="j ksa">Saudi Arabia</div><div class="v yes">PERSONAL</div><p>Article 9: those who acted in its name are jointly and personally liable to third parties.</p></div></div>
+    </div></div>
+    <div class="flip r" style="--d:4"><div class="in">
+      <div class="face front"><div class="row"><div class="ico" style="background:var(--gold);width:48px;height:48px"><span style="font-weight:700;font-size:20px">4</span></div><h3>Trading into the wall</h3></div><p>The board keeps trading for six months after it should have seen insolvent liquidation was unavoidable.</p><span class="tap">Flip ↻</span></div>
+      <div class="face back"><div><div class="j uk">United Kingdom</div><div class="v yes">CONTRIBUTE</div><p>Wrongful trading, IA 1986 s 214. Directors contribute to the company's assets for all creditors. Veil intact.</p></div><div><div class="j ksa">Saudi Arabia</div><div class="v yes">PERSONAL</div><p>Article 28: managers and board members jointly liable for negligence, and third parties can claim directly.</p></div></div>
+    </div></div>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 13 EVALUATION -->
+<section class="slide" data-speaker="3" data-title="Evaluation" data-notes="So how do they compare overall?
+The UK test is clear and lets investors price their risk. The cost falls on people who never chose to deal with the company. A tort victim can't negotiate a personal guarantee, and Prest gives them little help.
+Saudi law does better for outsiders against directors: Article 28 gives a direct claim and the triggers are objective. Its weakness is the opposite of the UK's: outside the listed provisions there's no general anti-abuse rule, and the Sharia discretion that could fill that gap is hard to predict because so few judgments are published.
+Our view: the UK trades flexibility for certainty, Saudi Arabia trades some certainty for wider accountability. Publishing commercial judgments would make the Saudi position much easier to rely on.">
+  <div class="head"><h2 class="r">Critical evaluation</h2><div class="chip r"><i style="background:var(--gold)"></i><b>Nouran</b> 10:00 – 15:00</div></div>
+  <div class="grid2" style="margin-bottom:22px">
+    <div class="card r" style="--d:1;min-height:290px"><h3 style="color:var(--indigo);margin-bottom:16px">United Kingdom</h3>
+      <p style="color:var(--emerald)">+ &nbsp;Clear, predictable test after <i>Prest</i></p><p style="color:var(--emerald)">+ &nbsp;Investors can price their risk in advance</p>
+      <p style="color:var(--red);margin-top:8px">– &nbsp;Evasion is hard to prove</p><p style="color:var(--red)">– &nbsp;Tort victims and later creditors are left exposed</p><p style="color:var(--red)">– &nbsp;Directors face outsiders mainly in insolvency</p></div>
+    <div class="card r" style="--d:2;min-height:290px"><h3 style="color:var(--emerald);margin-bottom:16px">Saudi Arabia</h3>
+      <p style="color:var(--emerald)">+ &nbsp;Objective triggers; no need to prove bad intent</p><p style="color:var(--emerald)">+ &nbsp;Art 28 gives outsiders a direct claim</p>
+      <p style="color:var(--red);margin-top:8px">– &nbsp;No general anti-abuse rule beyond listed provisions</p><p style="color:var(--red)">– &nbsp;Sharia discretion is hard to predict</p><p style="color:var(--red)">– &nbsp;Few published commercial judgments</p></div>
+  </div>
+  <div class="ink-box r" style="--d:3;font-size:17px;line-height:1.5"><span class="k">Our view&nbsp;&nbsp;</span>the UK buys certainty with a narrow remedy. Saudi Arabia gives outsiders more routes against directors, but its broader judicial discretion is less transparent. Publishing commercial judgments would let investors and creditors see where the Saudi line sits.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 14 CONCLUSION -->
+<section class="slide" data-speaker="3" data-title="Conclusion" data-notes="To conclude, three points.
+First, both systems share the same foundation from Salomon and Article 9: the company is a separate person, and limited liability is the rule.
+Second, they handle exceptions differently. The UK, after Prest, pierces only for deliberate evasion, and only as a last resort. Saudi law lists objective situations in the statute.
+Third, in both systems the liability that actually reaches individuals mostly runs through statute against directors, not through piercing.
+The real question is who carries the cost when the company form is misused. The UK leaves more of it with creditors; Saudi law shifts more of it onto the people running the company.
+Thank you. We're happy to take questions.">
+  <div class="head"><h2 class="r">Conclusion</h2><div class="chip r"><i style="background:var(--gold)"></i><b>Nouran</b> 10:00 – 15:00</div></div>
+  <div class="grid3">
+    <div class="card r" style="--d:1;min-height:270px"><div class="big-n">1</div><h3 style="margin:14px 0 10px">Same foundation</h3><p>Both treat the company as a separate person, with limited liability as the norm.</p></div>
+    <div class="card r" style="--d:2;min-height:270px"><div class="big-n">2</div><h3 style="margin:14px 0 10px">Different exceptions</h3><p>The UK pierces only for deliberate evasion. Saudi law lists objective triggers in statute.</p></div>
+    <div class="card r" style="--d:3;min-height:270px"><div class="big-n">3</div><h3 style="margin:14px 0 10px">Different targets</h3><p>Most real liability falls on directors through statute: IA 1986 in the UK, Art 28 in Saudi Arabia.</p></div>
+  </div>
+  <div class="closer r" style="--d:5">The question is never whether the veil exists.<br>It is who carries the cost when it is misused.</div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 15 REFERENCES -->
+<section class="slide" data-speaker="3" data-title="References" data-notes="Reference list in OSCOLA style. Leave on screen during questions if useful.">
+  <div class="head"><h2 class="r">References</h2></div>
+  <div class="grid2 refs" style="gap:48px">
+    <div class="r" style="--d:1">
+      <h4>Cases</h4>
+      <p><i>Adams v Cape Industries plc</i> [1990] Ch 433 (CA)</p>
+      <p><i>Gilford Motor Co Ltd v Horne</i> [1933] Ch 935 (CA)</p>
+      <p><i>Jones v Lipman</i> [1962] 1 WLR 832 (Ch)</p>
+      <p><i>Prest v Petrodel Resources Ltd</i> [2013] UKSC 34, [2013] 2 AC 415</p>
+      <p><i>Salomon v A Salomon &amp; Co Ltd</i> [1897] AC 22 (HL)</p>
+      <h4 style="margin-top:22px">Legislation</h4>
+      <p>Companies Law, Royal Decree No (M/132) dated 1/12/1443H (Saudi Arabia)</p>
+      <p>Insolvency Act 1986</p>
+      <p>Companies Act 2006, s 51</p>
+    </div>
+    <div class="r" style="--d:2">
+      <h4>Secondary sources</h4>
+      <p>Davies PL and Worthington S, <i>Gower: Principles of Modern Company Law</i> (11th edn, Sweet &amp; Maxwell 2021)</p>
+      <p>Vogel FE, <i>Islamic Law and Legal System: Studies of Saudi Arabia</i> (Brill 2000)</p>
+      <p>Halwani D and Farsi L, ‘Saudi Arabia: Law and Practice’ in <i>Chambers Doing Business In 2026</i> (Chambers and Partners 2026)</p>
+      <p>CWJ, ‘Lifting the Corporate Veil’ (Clarkson Wright &amp; Jakes, 21 October 2019)</p>
+      <p>Legal Information Institute, ‘Limited liability’ and ‘Piercing the veil’ (Cornell Law School, n.d.)</p>
+    </div>
+  </div>
+  <div class="foot"><span>Lifting the Corporate Veil · Company Law 342</span><span class="pg"></span></div>
+</section>
+
+<!-- 16 Q&A -->
+<section class="slide dark" data-speaker="3" data-title="Questions" data-notes="Likely questions:
+Why didn't Prest pierce the veil? Evasion wasn't engaged; trust law gave the remedy.
+Does Art 28 mean Saudi law 'pierces' the veil? No, it's personal liability for the director's own breach. The company stays separate.
+Could Sharia principles support a general anti-abuse rule? Possibly, but without published judgments we can't show how courts use it.">
+  <div class="veil-strips"><span></span><span></span><span></span></div>
+  <div class="title-wrap">
+    <h1 class="r" style="font-size:96px">Questions?</h1>
+    <div class="lede r" style="--d:1">Eman AlFires &nbsp;·&nbsp; Monerah AlSheikh &nbsp;·&nbsp; Nouran AlQahtani</div>
+    <div class="r" style="--d:2;margin-top:40px"><button class="btn gold" data-go="12">‹ Back to the scenarios</button></div>
+  </div>
+</section>
+
+</div></div>
+
+<div id="notes"><h5 id="notesWho"></h5><p id="notesText"></p></div>
+<div id="overview"><h6>All slides</h6><div class="tiles" id="tiles"></div></div>
+
+<div id="bar">
+  <button id="bPrev" title="Previous (←)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
+  <span id="count">1 / 16</span>
+  <button id="bNext" title="Next (→)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg></button>
+  <button id="bNotes" title="Speaker notes (N)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H5.2L4 17.2V4Zm2 3v2h12V7H6Zm0 4v2h8v-2H6Z"/></svg></button>
+  <button id="bTimer" title="Timer (T)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 1H9v2h6V1Zm4 6.4 1.4-1.4-1.4-1.4-1.5 1.5A9 9 0 1 0 19 7.4ZM12 20a7 7 0 1 1 0-14 7 7 0 0 1 0 14Zm1-11h-2v5h2V9Z"/></svg></button>
+  <span id="timer">00:00</span>
+  <button id="bOver" title="Overview (O)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"/></svg></button>
+  <button id="bFull" title="Fullscreen (F)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h5v2H7v3H5V5Zm9 0h5v5h-2V7h-3V5ZM5 14h2v3h3v2H5v-5Zm12 3v-3h2v5h-5v-2h3Z"/></svg></button>
+</div>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const stage = document.getElementById('stage');
+  const N = slides.length;
+  const SPK = {1:{n:'Eman',c:'#0f6b53',t:'0:00 – 5:00'},2:{n:'Monerah',c:'#2f3c7e',t:'5:00 – 10:00'},3:{n:'Nouran',c:'#c9a227',t:'10:00 – 15:00'}};
+  let cur = 0;
+
+  // scale stage to fit
+  function fit(){ const s = Math.min(innerWidth/1280, (innerHeight-10)/720); stage.style.transform = `scale(${s})`; }
+  addEventListener('resize', fit); fit();
+
+  // page numbers + progress
+  const prog = document.getElementById('progress');
+  slides.forEach((s,i)=>{
+    const pg = s.querySelector('.pg'); if(pg) pg.textContent = i+1;
+    const seg = document.createElement('span'); seg.style.background = SPK[s.dataset.speaker].c; prog.appendChild(seg);
+  });
+
+  // overview tiles
+  const tiles = document.getElementById('tiles');
+  slides.forEach((s,i)=>{
+    const b = document.createElement('button'); b.className='tile';
+    b.innerHTML = `<small>${i+1} · ${SPK[s.dataset.speaker].n}</small><b>${s.dataset.title}</b>`;
+    b.onclick = () => { go(i); toggleOver(false); };
+    tiles.appendChild(b);
+  });
+
+  function go(i){
+    i = Math.max(0, Math.min(N-1, i));
+    slides.forEach((s,k)=>{ s.classList.toggle('active', k===i); s.classList.toggle('prev', k<i); });
+    cur = i;
+    document.getElementById('count').textContent = `${i+1} / ${N}`;
+    [...prog.children].forEach((p,k)=>p.classList.toggle('done', k<=i));
+    [...tiles.children].forEach((t,k)=>t.classList.toggle('cur', k===i));
+    const s = slides[i], sp = SPK[s.dataset.speaker];
+    document.getElementById('notesWho').textContent = `${sp.n} · ${sp.t} · slide ${i+1}`;
+    document.getElementById('notesText').textContent = s.dataset.notes || '';
+    try { history.replaceState(null,'','#'+(i+1)); } catch(e){}
+  }
+
+  const next = () => go(cur+1), prev = () => go(cur-1);
+  document.getElementById('bNext').onclick = next;
+  document.getElementById('bPrev').onclick = prev;
+
+  // notes
+  const notes = document.getElementById('notes'), bNotes = document.getElementById('bNotes');
+  const toggleNotes = () => { notes.classList.toggle('show'); bNotes.classList.toggle('on'); };
+  bNotes.onclick = toggleNotes;
+
+  // overview
+  const over = document.getElementById('overview'), bOver = document.getElementById('bOver');
+  const toggleOver = (v) => { const on = v===undefined ? !over.classList.contains('show') : v; over.classList.toggle('show', on); bOver.classList.toggle('on', on); };
+  bOver.onclick = () => toggleOver();
+
+  // timer
+  let t0 = null, tick = null, elapsed = 0;
+  const tEl = document.getElementById('timer'), bTimer = document.getElementById('bTimer');
+  const fmt = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  function toggleTimer(){
+    if (tick){ clearInterval(tick); tick=null; elapsed += Math.floor((Date.now()-t0)/1000); bTimer.classList.remove('on'); }
+    else { t0 = Date.now(); bTimer.classList.add('on');
+      tick = setInterval(()=>{ const s = elapsed + Math.floor((Date.now()-t0)/1000); tEl.textContent = fmt(s); tEl.style.color = s>=900 ? '#ff8f9c' : ''; }, 250); }
+  }
+  bTimer.onclick = toggleTimer;
+  tEl.ondblclick = () => { if(tick){clearInterval(tick);tick=null;bTimer.classList.remove('on');} elapsed=0; tEl.textContent='00:00'; };
+
+  // fullscreen
+  const full = () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
+  document.getElementById('bFull').onclick = full;
+
+  // jump links
+  document.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', e => { e.stopPropagation(); go(+el.dataset.go - 1); }));
+
+  // flip cards
+  document.querySelectorAll('.flip').forEach(f => f.addEventListener('click', e => { e.stopPropagation(); f.classList.toggle('on'); }));
+
+  // pierce demo
+  const demo = document.getElementById('veilDemo'), pb = document.getElementById('pierce'), tag = document.getElementById('vTag');
+  pb.addEventListener('click', e => { e.stopPropagation(); const on = demo.classList.toggle('pierced');
+    pb.textContent = on ? 'Restore the veil' : 'Pierce the veil';
+    tag.textContent = on ? 'claim reaches the people behind it' : 'claims stop at the company'; });
+
+  // keys
+  addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    const k = e.key.toLowerCase();
+    if (['arrowright','pagedown',' ','enter'].includes(e.key.toLowerCase())) { e.preventDefault(); next(); }
+    else if (['arrowleft','pageup','backspace'].includes(k)) { e.preventDefault(); prev(); }
+    else if (k==='home') go(0); else if (k==='end') go(N-1);
+    else if (k==='n') toggleNotes(); else if (k==='o' || k==='escape' && over.classList.contains('show')) toggleOver(k==='escape'?false:undefined);
+    else if (k==='t') toggleTimer(); else if (k==='f') full();
+  });
+
+  // swipe
+  let sx = null;
+  addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  addEventListener('touchend', e => { if (sx===null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) (dx<0?next:prev)(); sx=null; });
+
+  // hide chrome when idle
+  let idle; const wake = () => { document.body.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(()=>document.body.classList.add('idle'), 3000); };
+  ['mousemove','keydown','touchstart'].forEach(ev => addEventListener(ev, wake)); wake();
+
+  const fromHash = () => { const h = parseInt(location.hash.slice(1)); if (!isNaN(h) && h-1 !== cur) go(h-1); };
+  go(0); fromHash(); addEventListener('hashchange', fromHash);
+})();
+</script>
+</body>
+</html>
